@@ -130,7 +130,7 @@
           <div class="amount-due"><span>Amount Due</span><strong id="payment-total">₱0.00</strong></div>
           <div class="payment-options" role="group" aria-label="Payment methods">
             <button class="payment-option" type="button" data-payment-method="cash" aria-pressed="false">
-              <span class="payment-option-icon" aria-hidden="true">₱</span>
+              <span class="payment-option-icon cash-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="3.5" y="7" width="25" height="18" rx="2.5"/><circle cx="16" cy="16" r="4"/><path d="M7.5 11a3 3 0 0 0 3-3m14 13a3 3 0 0 0-3 3"/></svg></span>
               <span class="payment-option-copy"><strong>Cash</strong><span>Pay with cash</span></span>
               <span class="payment-option-arrow" aria-hidden="true">→</span>
             </button>
@@ -189,27 +189,43 @@
         </div>
       </section>
 
-      <section id="cash-payment-step" class="review-shell" aria-labelledby="cash-payment-title" hidden>
+      <section id="cash-payment-step" class="review-shell cash-payment-shell" aria-labelledby="cash-payment-title" hidden>
         <div class="review-heading">
           <p class="eyebrow">CASH PAYMENT</p>
           <h1 id="cash-payment-title" tabindex="-1">Pay with cash</h1>
           <p class="section-description">Enter the cash amount received.</p>
         </div>
         <div class="review-card cash-payment-card">
-          <div class="cash-summary">
-            <div><span>Total amount</span><strong id="cash-total">₱0.00</strong></div>
-            <div><span>Change</span><strong id="cash-change" aria-live="polite">—</strong></div>
+          <div class="cash-payment-details">
+            <div class="cash-total-row"><span>Total amount</span><strong id="cash-total">₱0.00</strong></div>
+            <label class="cash-input-label" for="cash-amount">Amount paid</label>
+            <div class="cash-input-wrap">
+              <span aria-hidden="true">₱</span>
+              <input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-feedback" />
+            </div>
+            <p id="cash-feedback" class="cash-feedback" role="status" aria-live="polite">Enter the amount received to see payment status.</p>
+            <div class="quick-amounts" id="quick-amounts" aria-label="Quick cash amounts"></div>
+            <div class="cash-change-row"><span>Change</span><strong id="cash-change" aria-live="polite">—</strong></div>
           </div>
-          <label class="cash-input-label" for="cash-amount">Amount paid</label>
-          <div class="cash-input-wrap">
-            <span aria-hidden="true">₱</span>
-            <input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-feedback" />
-          </div>
-          <div class="quick-amounts" id="quick-amounts" aria-label="Quick cash amounts"></div>
-          <p id="cash-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
-          <div class="cash-actions">
-            <button id="change-cash-method" class="secondary-button" type="button">Change payment method</button>
-            <button id="pay-now" class="primary-button" type="button">Pay Now</button>
+          <div class="cash-payment-controls">
+            <div class="cash-keypad" role="group" aria-label="Cash amount keypad">
+              <button type="button" data-keypad="1" aria-label="1">1</button>
+              <button type="button" data-keypad="2" aria-label="2">2</button>
+              <button type="button" data-keypad="3" aria-label="3">3</button>
+              <button type="button" data-keypad="4" aria-label="4">4</button>
+              <button type="button" data-keypad="5" aria-label="5">5</button>
+              <button type="button" data-keypad="6" aria-label="6">6</button>
+              <button type="button" data-keypad="7" aria-label="7">7</button>
+              <button type="button" data-keypad="8" aria-label="8">8</button>
+              <button type="button" data-keypad="9" aria-label="9">9</button>
+              <button type="button" data-keypad="clear" class="keypad-utility">Clear</button>
+              <button type="button" data-keypad="0" aria-label="0">0</button>
+              <button type="button" data-keypad="backspace" class="keypad-utility" aria-label="Backspace">⌫</button>
+            </div>
+            <div class="cash-actions">
+              <button id="pay-now" class="primary-button" type="button" disabled>Pay Now</button>
+              <button id="change-cash-method" class="secondary-button" type="button">← Change payment method</button>
+            </div>
           </div>
         </div>
       </section>

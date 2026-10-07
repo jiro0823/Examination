@@ -53,6 +53,8 @@ const cashAmount = document.querySelector("#cash-amount");
 const cashChange = document.querySelector("#cash-change");
 const cashFeedback = document.querySelector("#cash-feedback");
 const quickAmounts = document.querySelector("#quick-amounts");
+const payNowButton = document.querySelector("#pay-now");
+const cashKeypad = document.querySelector(".cash-keypad");
 const progressSteps = [...document.querySelectorAll("[data-step]")];
 const categoryFilters = document.querySelector("#category-filters");
 
@@ -253,11 +255,22 @@ function setCashFeedback(message, kind = "info") {
 }
 
 function renderCashEstimate() {
-  const result = validateCashPayment(
-    calculateTransactionTotal(state.cart),
-    cashAmount.value,
-  );
+  const total = calculateTransactionTotal(state.cart);
+  const result = validateCashPayment(total, cashAmount.value);
   cashChange.textContent = result.valid ? formatMoney(result.change) : "—";
+  payNowButton.disabled = total <= 0 || !result.valid;
+
+  if (result.valid) {
+    setCashFeedback(result.change === 0
+      ? "Exact payment. No change due."
+      : `Payment ready. Change ${formatMoney(result.change)}.`, "success");
+  } else if (result.reason === "insufficient_funds") {
+    setCashFeedback(`Amount remaining: ${formatMoney(result.shortfall)}.`, "error");
+  } else {
+    setCashFeedback(cashAmount.value.trim()
+      ? "Enter a valid amount paid."
+      : "Enter the amount received to see payment status.");
+  }
 }
 
 function renderCashPayment() {
@@ -634,13 +647,43 @@ quickAmounts.addEventListener("click", (event) => {
   const button = event.target.closest("[data-quick-amount]");
   if (!button) return;
   cashAmount.value = button.dataset.quickAmount;
-  setCashFeedback("");
   renderCashEstimate();
 });
 
 cashAmount.addEventListener("input", () => {
-  setCashFeedback("");
+  const originalValue = cashAmount.value;
+  let cleanedValue = originalValue.replace(/[^\d.]/g, "");
+  const decimalPosition = cleanedValue.indexOf(".");
+  if (decimalPosition !== -1) {
+    cleanedValue = `${cleanedValue.slice(0, decimalPosition)}.${cleanedValue.slice(decimalPosition + 1).replace(/\./g, "").slice(0, 2)}`;
+  }
+  if (cleanedValue.length > 15) cleanedValue = cleanedValue.slice(0, 15);
+  if (cashAmount.value !== cleanedValue) cashAmount.value = cleanedValue;
   renderCashEstimate();
+});
+
+cashAmount.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    if (!payNowButton.disabled) payNowButton.click();
+  }
+});
+
+cashKeypad.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-keypad]");
+  if (!button) return;
+
+  if (button.dataset.keypad === "clear") {
+    cashAmount.value = "";
+  } else if (button.dataset.keypad === "backspace") {
+    cashAmount.value = cashAmount.value.slice(0, -1);
+  } else if (cashAmount.value.length < 15) {
+    cashAmount.value += button.dataset.keypad;
+  }
+
+  renderCashEstimate();
+  cashAmount.focus();
+  cashAmount.setSelectionRange(cashAmount.value.length, cashAmount.value.length);
 });
 
 document.querySelector("#change-cash-method").addEventListener("click", () => {
@@ -649,7 +692,9 @@ document.querySelector("#change-cash-method").addEventListener("click", () => {
   document.querySelector("#payment-title").focus();
 });
 
-document.querySelector("#pay-now").addEventListener("click", () => {
+payNowButton.addEventListener("click", () => {
+  if (payNowButton.disabled || state.step !== "processing" || state.paymentMethod !== "cash") return;
+  payNowButton.disabled = true;
   const result = completeTransaction(state, cashAmount.value);
   if (!result.success) {
     if (result.reason === "insufficient_funds") {
