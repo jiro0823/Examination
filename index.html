@@ -146,16 +146,39 @@
         </div>
       </section>
 
-      <section id="processing-step" class="review-shell" aria-labelledby="processing-title" hidden>
+      <section id="processing-step" class="review-shell card-payment-shell" aria-labelledby="processing-title" hidden>
         <div id="card-payment-ready" class="review-card card-payment-card">
-          <p class="eyebrow">CARD PAYMENT SIMULATION</p>
-          <h1 id="processing-title" tabindex="-1">Credit / Debit Card</h1>
-          <div class="amount-due"><span>Amount Due</span><strong id="card-total">₱0.00</strong></div>
-          <p class="card-instructions">Please tap, insert, or swipe your card.</p>
-          <p id="card-feedback" class="card-feedback" role="status" aria-live="polite"></p>
-          <div class="card-actions">
-            <button id="back-to-payment" class="secondary-button" type="button">Back</button>
-            <button id="process-card-payment" class="primary-button" type="button">Process Payment</button>
+          <div class="card-payment-visual" aria-hidden="true">
+            <div class="card-payment-visual-copy">
+              <span class="card-payment-kicker">CARD PAYMENT</span>
+              <span class="card-payment-label">Ready when you are</span>
+            </div>
+            <div class="kiosk-card-illustration">
+              <span class="card-chip"></span>
+              <span class="card-contactless"><svg viewBox="0 0 32 32"><path d="M12 8c6.6 0 12 5.4 12 12M12 14c3.3 0 6 2.7 6 6M12 20h.01"/></svg></span>
+              <span class="card-illustration-stripe"></span>
+              <span class="card-illustration-lines"></span>
+            </div>
+          </div>
+          <div class="card-payment-content">
+            <div>
+              <p class="eyebrow">PAYMENT METHOD</p>
+              <h1 id="processing-title" tabindex="-1">Credit / Debit Card</h1>
+            </div>
+            <div class="amount-due"><span>Amount Due</span><strong id="card-total">₱0.00</strong></div>
+            <div class="card-instruction-panel">
+              <p class="card-instructions">Tap, insert, or swipe your card</p>
+              <div class="card-entry-options" aria-label="Supported card payment methods">
+                <span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 9c8.8 0 16 6.6 16 14M7 15c5.5 0 10 3.6 10 8M7 22h.01"/></svg>Tap</span>
+                <span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="4" width="18" height="24" rx="2"/><path d="M11 10h10M11 16h10M11 22h6"/></svg>Insert</span>
+                <span><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="7" width="22" height="18" rx="3"/><path d="M6 13h20M10 20h6"/></svg>Swipe</span>
+              </div>
+            </div>
+            <p id="card-feedback" class="card-feedback" role="status" aria-live="polite"></p>
+            <div class="card-actions">
+              <button id="back-to-payment" class="secondary-button" type="button">Back</button>
+              <button id="process-card-payment" class="primary-button" type="button">Process Payment</button>
+            </div>
           </div>
         </div>
         <div id="card-processing-state" class="review-card card-processing-state" role="status" aria-live="polite" hidden>
@@ -239,16 +262,16 @@
         </div>
       </section>
 
-      <section id="success-step" class="review-shell" aria-labelledby="success-title" hidden>
+      <section id="success-step" class="review-shell success-shell" aria-labelledby="success-title" hidden>
         <div class="review-card success-card">
           <span class="success-mark" aria-hidden="true">✓</span>
           <p class="eyebrow">PAYMENT COMPLETE</p>
           <h1 id="success-title" tabindex="-1">Payment Successful</h1>
           <p id="success-message" class="section-description">Your payment has been received.</p>
           <dl class="success-details">
-            <div><dt>Reference number</dt><dd id="success-reference"></dd></div>
+            <div><dt>Reference</dt><dd id="success-reference"></dd></div>
             <div><dt>Payment method</dt><dd id="success-method"></dd></div>
-            <div><dt>Transaction amount</dt><dd id="success-total"></dd></div>
+            <div><dt>Amount</dt><dd id="success-total"></dd></div>
             <div><dt>Amount paid</dt><dd id="success-paid"></dd></div>
             <div><dt>Change</dt><dd id="success-change"></dd></div>
           </dl>

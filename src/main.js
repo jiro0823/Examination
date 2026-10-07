@@ -450,6 +450,7 @@ function render() {
   document.body.classList.toggle("cash-payment-active", !cashPaymentStep.hidden);
   document.body.classList.toggle("payment-method-active", state.step === "payment");
   document.body.classList.toggle("qr-payment-active", !qrPaymentStep.hidden);
+  document.body.classList.toggle("card-payment-active", !processingStep.hidden);
 }
 
 function changeState(action) {
