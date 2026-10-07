@@ -447,6 +447,8 @@ function render() {
   qrPaymentStep.hidden = state.step !== "processing" || state.paymentMethod !== "qr";
   successStep.hidden = state.step !== "success";
   receiptStep.hidden = state.step !== "receipt";
+  document.body.classList.toggle("cash-payment-active", !cashPaymentStep.hidden);
+  document.body.classList.toggle("payment-method-active", state.step === "payment");
   document.body.classList.toggle("qr-payment-active", !qrPaymentStep.hidden);
 }
 
