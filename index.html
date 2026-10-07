@@ -168,23 +168,35 @@
         </div>
       </section>
 
-      <section id="qr-payment-step" class="review-shell" aria-labelledby="qr-payment-title" hidden>
+      <section id="qr-payment-step" class="review-shell qr-payment-shell" aria-labelledby="qr-payment-title" hidden>
         <div class="review-heading">
-          <p class="eyebrow">QR PAYMENT SIMULATION</p>
-          <h1 id="qr-payment-title" tabindex="-1">QR Payment</h1>
-          <p class="section-description">Scan the demonstration code to continue.</p>
+          <p class="eyebrow">QR PAYMENT</p>
+          <h1 id="qr-payment-title" tabindex="-1">Scan &amp; Pay</h1>
+          <p class="section-description">Follow the steps to complete this demo payment.</p>
         </div>
         <div class="review-card qr-payment-card">
-          <div class="amount-due"><span>Amount to pay</span><strong id="qr-total">₱0.00</strong></div>
-          <div class="qr-code-frame">
-            <div id="qr-code" class="qr-code" role="img" aria-label="Generated QR code for simulated payment"></div>
-            <span class="qr-demo-label">DEMO CODE · NO FUNDS TRANSFER</span>
+          <div class="qr-code-column">
+            <div class="amount-due"><span>Amount Due</span><strong id="qr-total">₱0.00</strong></div>
+            <div class="qr-code-frame">
+              <div id="qr-code" class="qr-code" role="img" aria-label="Generated QR code for simulated payment"></div>
+              <span class="qr-demo-label">DEMO CODE · NO FUNDS TRANSFER</span>
+            </div>
           </div>
-          <p class="qr-instructions">Scan to view the demo order amount. This code does not connect to a payment service or transfer funds. Select Confirm Payment to simulate completion.</p>
-          <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
-          <div class="qr-actions">
-            <button id="back-from-qr" class="secondary-button" type="button">Back</button>
-            <button id="confirm-qr-payment" class="primary-button" type="button">Confirm Payment</button>
+          <div class="qr-payment-details">
+            <span class="qr-payment-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 13V4h9v9H4Zm15-9h9v9h-9V4ZM4 19h9v9H4v-9Zm3-12v3h3V7H7Zm15 0v3h3V7h-3Zm-15 15v3h3v-3H7Zm9-18h3m-3 6v3m0 3h3m3-3v3m3 0h3m-9 3v3m3-3h3v3m3-3v3"/></svg></span>
+            <h2>Scan &amp; Pay</h2>
+            <p class="qr-demo-description">Open your payment or banking app and scan the code. This demo code only displays the order amount; it does not connect to a payment service or transfer funds.</p>
+            <ol class="qr-instructions">
+              <li>Open your payment or banking app.</li>
+              <li>Scan the QR code.</li>
+              <li>Pay the exact amount shown.</li>
+              <li>Return and tap Confirm Payment.</li>
+            </ol>
+            <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
+            <div class="qr-actions">
+              <button id="confirm-qr-payment" class="primary-button" type="button">Confirm Payment</button>
+              <button id="back-from-qr" class="secondary-button" type="button">← Change payment method</button>
+            </div>
           </div>
         </div>
       </section>

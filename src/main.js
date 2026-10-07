@@ -322,9 +322,9 @@ function renderQRCode(total) {
   );
   new window.QRCode(qrCodeContainer, {
     text: payload,
-    width: 208,
-    height: 208,
-    colorDark: "#102a43",
+    width: 256,
+    height: 256,
+    colorDark: "#000000",
     colorLight: "#ffffff",
     correctLevel: window.QRCode.CorrectLevel.M,
   });
@@ -447,6 +447,7 @@ function render() {
   qrPaymentStep.hidden = state.step !== "processing" || state.paymentMethod !== "qr";
   successStep.hidden = state.step !== "success";
   receiptStep.hidden = state.step !== "receipt";
+  document.body.classList.toggle("qr-payment-active", !qrPaymentStep.hidden);
 }
 
 function changeState(action) {
