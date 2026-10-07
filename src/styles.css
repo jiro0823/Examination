@@ -1371,6 +1371,33 @@ h2 {
   scroll-padding-block: 8px;
 }
 
+.order-suggestions {
+  flex: 0 0 auto;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--secondary-surface);
+}
+
+.order-suggestions[hidden] { display: none; }
+.order-suggestions h3 { margin: 0 0 8px; color: var(--navy); font-size: 13px; }
+.suggested-products { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.suggested-product {
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 1px solid #a7f3d0;
+  border-radius: 9px;
+  color: var(--primary-hover);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.suggested-product:hover { border-color: var(--primary); background: var(--primary-light); }
+
 .empty-order {
   margin: 0;
   padding: 14px 8px;

@@ -57,6 +57,8 @@ const payNowButton = document.querySelector("#pay-now");
 const cashKeypad = document.querySelector(".cash-keypad");
 const progressSteps = [...document.querySelectorAll("[data-step]")];
 const categoryFilters = document.querySelector("#category-filters");
+const orderSuggestions = document.querySelector("#order-suggestions");
+const suggestedProducts = document.querySelector("#suggested-products");
 
 const PRODUCT_CATEGORIES = {
   coffee: "drinks",
@@ -65,6 +67,15 @@ const PRODUCT_CATEGORIES = {
   cookies: "snacks",
   "bottled-water": "drinks",
   chocolate: "snacks",
+};
+
+const PRODUCT_PAIRINGS = {
+  coffee: ["cookies", "chocolate"],
+  sandwich: ["soft-drink", "bottled-water"],
+  "soft-drink": ["sandwich", "cookies"],
+  cookies: ["coffee", "bottled-water"],
+  "bottled-water": ["sandwich", "cookies"],
+  chocolate: ["coffee", "soft-drink"],
 };
 
 const PRODUCT_ICONS = {
@@ -129,6 +140,32 @@ function renderProducts() {
     fragment.append(makeProductCard(product));
   }
   productGrid.replaceChildren(fragment);
+}
+
+function renderSuggestions() {
+  const inCart = new Set(state.cart.map((item) => item.product.id));
+  const recommendations = [];
+
+  for (const item of state.cart) {
+    for (const productId of PRODUCT_PAIRINGS[item.product.id] ?? []) {
+      if (inCart.has(productId) || recommendations.some((product) => product.id === productId)) continue;
+      const product = PRODUCTS.find((candidate) => candidate.id === productId);
+      if (product) recommendations.push(product);
+      if (recommendations.length === 2) break;
+    }
+    if (recommendations.length === 2) break;
+  }
+
+  suggestedProducts.replaceChildren(...recommendations.map((product) => {
+    const button = document.createElement("button");
+    button.className = "suggested-product";
+    button.type = "button";
+    button.dataset.suggestedProductId = product.id;
+    button.textContent = `+ ${product.name} · ${formatMoney(product.price)}`;
+    button.setAttribute("aria-label", `Add suggested item ${product.name}, ${formatMoney(product.price)}`);
+    return button;
+  }));
+  orderSuggestions.hidden = recommendations.length === 0;
 }
 
 function makeQuantityButton(action, productName, productId) {
@@ -213,6 +250,7 @@ function renderOrder() {
   }
 
   orderContent.replaceChildren(fragment);
+  renderSuggestions();
   for (const card of productGrid.querySelectorAll(".product-card")) {
     const item = state.cart.find((cartItem) => cartItem.product.id === card.dataset.productId);
     const badge = card.querySelector(".product-quantity-badge");
@@ -457,6 +495,16 @@ function changeState(action) {
   state = reducePosState(state, action);
   render();
 }
+
+suggestedProducts.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-suggested-product-id]");
+  if (!button) return;
+  const product = PRODUCTS.find((item) => item.id === button.dataset.suggestedProductId);
+  if (!product) return;
+
+  changeState({ type: "add_product", product });
+  announce(`${product.name} added to your order.`, "success");
+});
 
 productGrid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-product-id]");
