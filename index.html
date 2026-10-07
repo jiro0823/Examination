@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#102a43" />
+    <meta name="theme-color" content="#047857" />
     <title>Campus Store | Self-Service Kiosk</title>
     <link rel="stylesheet" href="./src/styles.css" />
     <script src="./node_modules/qrcodejs/qrcode.min.js"></script>
@@ -58,6 +58,12 @@
           </div>
           <p class="price-note">All prices in Philippine pesos</p>
         </div>
+        <nav id="category-filters" class="category-filters" aria-label="Filter products">
+          <button class="category-filter is-selected" type="button" data-category="all" aria-pressed="true">All</button>
+          <button class="category-filter" type="button" data-category="drinks" aria-pressed="false">Drinks</button>
+          <button class="category-filter" type="button" data-category="food" aria-pressed="false">Food</button>
+          <button class="category-filter" type="button" data-category="snacks" aria-pressed="false">Snacks</button>
+        </nav>
         <div id="product-grid" class="product-grid" aria-label="Products"></div>
       </section>
 
@@ -114,29 +120,26 @@
         </div>
       </section>
 
-      <section id="payment-step" class="review-shell" aria-labelledby="payment-title" hidden>
+      <section id="payment-step" class="review-shell payment-method-shell" aria-labelledby="payment-title" hidden>
         <div class="review-heading">
           <p class="eyebrow">PAYMENT METHOD</p>
           <h1 id="payment-title" tabindex="-1">Choose how to pay</h1>
           <p class="section-description">Select a payment method to continue.</p>
         </div>
-        <div class="review-card payment-card">
+        <div class="payment-card">
           <div class="amount-due"><span>Amount Due</span><strong id="payment-total">₱0.00</strong></div>
           <div class="payment-options" role="group" aria-label="Payment methods">
             <button class="payment-option" type="button" data-payment-method="cash" aria-pressed="false">
-              <span class="payment-option-icon" aria-hidden="true">₱</span>
+              <span class="payment-option-icon cash-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="3.5" y="7" width="25" height="18" rx="2.5"/><circle cx="16" cy="16" r="4"/><path d="M7.5 11a3 3 0 0 0 3-3m14 13a3 3 0 0 0-3 3"/></svg></span>
               <span class="payment-option-copy"><strong>Cash</strong><span>Pay with cash</span></span>
-              <span class="payment-option-arrow" aria-hidden="true">→</span>
             </button>
             <button class="payment-option" type="button" data-payment-method="qr" aria-pressed="false">
-              <span class="payment-option-icon qr-icon" aria-hidden="true">QR</span>
+              <span class="payment-option-icon qr-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 13V4h9v9H4Zm15-9h9v9h-9V4ZM4 19h9v9H4v-9Zm3-12v3h3V7H7Zm15 0v3h3V7h-3Zm-15 15v3h3v-3H7Zm9-18h3m-3 6v3m0 3h3m3-3v3m3 0h3m-9 3v3m3-3h3v3m3-3v3"/></svg></span>
               <span class="payment-option-copy"><strong>QR Payment</strong><span>Scan a payment code</span></span>
-              <span class="payment-option-arrow" aria-hidden="true">→</span>
             </button>
             <button class="payment-option" type="button" data-payment-method="card" aria-pressed="false">
-              <span class="payment-option-icon card-icon" aria-hidden="true">▰</span>
+              <span class="payment-option-icon card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="3.5" y="7" width="25" height="18" rx="3"/><path d="M4 13h24M8 20h6"/></svg></span>
               <span class="payment-option-copy"><strong>Credit / Debit Card</strong><span>Pay with your card</span></span>
-              <span class="payment-option-arrow" aria-hidden="true">→</span>
             </button>
           </div>
           <button id="back-to-review" class="secondary-button payment-back" type="button">Back to Review</button>
@@ -162,48 +165,76 @@
         </div>
       </section>
 
-      <section id="qr-payment-step" class="review-shell" aria-labelledby="qr-payment-title" hidden>
+      <section id="qr-payment-step" class="review-shell qr-payment-shell" aria-labelledby="qr-payment-title" hidden>
         <div class="review-heading">
-          <p class="eyebrow">QR PAYMENT SIMULATION</p>
-          <h1 id="qr-payment-title" tabindex="-1">QR Payment</h1>
-          <p class="section-description">Scan the demonstration code to continue.</p>
+          <p class="eyebrow">QR PAYMENT</p>
+          <h1 id="qr-payment-title" tabindex="-1">Scan &amp; Pay</h1>
+          <p class="section-description">Follow the steps to complete this demo payment.</p>
         </div>
         <div class="review-card qr-payment-card">
-          <div class="amount-due"><span>Amount to pay</span><strong id="qr-total">₱0.00</strong></div>
-          <div class="qr-code-frame">
-            <div id="qr-code" class="qr-code" role="img" aria-label="Generated QR code for simulated payment"></div>
-            <span class="qr-demo-label">DEMO CODE · NO FUNDS TRANSFER</span>
+          <div class="qr-code-column">
+            <div class="amount-due"><span>Amount Due</span><strong id="qr-total">₱0.00</strong></div>
+            <div class="qr-code-frame">
+              <div id="qr-code" class="qr-code" role="img" aria-label="Generated QR code for simulated payment"></div>
+              <span class="qr-demo-label">DEMO CODE · NO FUNDS TRANSFER</span>
+            </div>
           </div>
-          <p class="qr-instructions">Scan to view the demo order amount. This code does not connect to a payment service or transfer funds. Select Confirm Payment to simulate completion.</p>
-          <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
-          <div class="qr-actions">
-            <button id="back-from-qr" class="secondary-button" type="button">Back</button>
-            <button id="confirm-qr-payment" class="primary-button" type="button">Confirm Payment</button>
+          <div class="qr-payment-details">
+            <span class="qr-payment-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 13V4h9v9H4Zm15-9h9v9h-9V4ZM4 19h9v9H4v-9Zm3-12v3h3V7H7Zm15 0v3h3V7h-3Zm-15 15v3h3v-3H7Zm9-18h3m-3 6v3m0 3h3m3-3v3m3 0h3m-9 3v3m3-3h3v3m3-3v3"/></svg></span>
+            <h2>Scan &amp; Pay</h2>
+            <p class="qr-demo-description">Open your payment or banking app and scan the code. This demo code only displays the order amount; it does not connect to a payment service or transfer funds.</p>
+            <ol class="qr-instructions">
+              <li>Open your payment or banking app.</li>
+              <li>Scan the QR code.</li>
+              <li>Pay the exact amount shown.</li>
+              <li>Return and tap Confirm Payment.</li>
+            </ol>
+            <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
+            <div class="qr-actions">
+              <button id="confirm-qr-payment" class="primary-button" type="button">Confirm Payment</button>
+              <button id="back-from-qr" class="secondary-button" type="button">← Change payment method</button>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="cash-payment-step" class="review-shell" aria-labelledby="cash-payment-title" hidden>
+      <section id="cash-payment-step" class="review-shell cash-payment-shell" aria-labelledby="cash-payment-title" hidden>
         <div class="review-heading">
           <p class="eyebrow">CASH PAYMENT</p>
           <h1 id="cash-payment-title" tabindex="-1">Pay with cash</h1>
           <p class="section-description">Enter the cash amount received.</p>
         </div>
         <div class="review-card cash-payment-card">
-          <div class="cash-summary">
-            <div><span>Total amount</span><strong id="cash-total">₱0.00</strong></div>
-            <div><span>Change</span><strong id="cash-change" aria-live="polite">—</strong></div>
+          <div class="cash-payment-details">
+            <div class="cash-total-row"><span>Total amount</span><strong id="cash-total">₱0.00</strong></div>
+            <label class="cash-input-label" for="cash-amount">Amount paid</label>
+            <div class="cash-input-wrap">
+              <span aria-hidden="true">₱</span>
+              <input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-feedback" />
+            </div>
+            <p id="cash-feedback" class="cash-feedback" role="status" aria-live="polite">Enter the amount received to see payment status.</p>
+            <div class="quick-amounts" id="quick-amounts" aria-label="Quick cash amounts"></div>
+            <div class="cash-change-row"><span>Change</span><strong id="cash-change" aria-live="polite">—</strong></div>
           </div>
-          <label class="cash-input-label" for="cash-amount">Amount paid</label>
-          <div class="cash-input-wrap">
-            <span aria-hidden="true">₱</span>
-            <input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-feedback" />
-          </div>
-          <div class="quick-amounts" id="quick-amounts" aria-label="Quick cash amounts"></div>
-          <p id="cash-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
-          <div class="cash-actions">
-            <button id="change-cash-method" class="secondary-button" type="button">Change payment method</button>
-            <button id="pay-now" class="primary-button" type="button">Pay Now</button>
+          <div class="cash-payment-controls">
+            <div class="cash-keypad" role="group" aria-label="Cash amount keypad">
+              <button type="button" data-keypad="1" aria-label="1">1</button>
+              <button type="button" data-keypad="2" aria-label="2">2</button>
+              <button type="button" data-keypad="3" aria-label="3">3</button>
+              <button type="button" data-keypad="4" aria-label="4">4</button>
+              <button type="button" data-keypad="5" aria-label="5">5</button>
+              <button type="button" data-keypad="6" aria-label="6">6</button>
+              <button type="button" data-keypad="7" aria-label="7">7</button>
+              <button type="button" data-keypad="8" aria-label="8">8</button>
+              <button type="button" data-keypad="9" aria-label="9">9</button>
+              <button type="button" data-keypad="clear" class="keypad-utility">Clear</button>
+              <button type="button" data-keypad="0" aria-label="0">0</button>
+              <button type="button" data-keypad="backspace" class="keypad-utility" aria-label="Backspace">⌫</button>
+            </div>
+            <div class="cash-actions">
+              <button id="pay-now" class="primary-button" type="button" disabled>Pay Now</button>
+              <button id="change-cash-method" class="secondary-button" type="button">← Change payment method</button>
+            </div>
           </div>
         </div>
       </section>
