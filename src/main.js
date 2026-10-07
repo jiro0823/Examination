@@ -20,6 +20,8 @@ const currency = new Intl.NumberFormat("en-PH", {
 let state = createInitialPosState();
 let cardProcessing = false;
 let cardProcessingTimeout = null;
+let selectedCategory = "all";
+let feedbackTimeout = null;
 
 const CARD_PROCESSING_DELAY_MS = 800;
 
@@ -52,6 +54,25 @@ const cashChange = document.querySelector("#cash-change");
 const cashFeedback = document.querySelector("#cash-feedback");
 const quickAmounts = document.querySelector("#quick-amounts");
 const progressSteps = [...document.querySelectorAll("[data-step]")];
+const categoryFilters = document.querySelector("#category-filters");
+
+const PRODUCT_CATEGORIES = {
+  coffee: "drinks",
+  sandwich: "food",
+  "soft-drink": "drinks",
+  cookies: "snacks",
+  "bottled-water": "drinks",
+  chocolate: "snacks",
+};
+
+const PRODUCT_ICONS = {
+  coffee: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 17h24v13a9 9 0 0 1-9 9h-6a9 9 0 0 1-9-9V17Z"/><path d="M34 20h3a5 5 0 0 1 0 10h-4M15 11c0-2 2-2 2-4m8 4c0-2 2-2 2-4M8 42h31"/></svg>',
+  sandwich: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 21a16 16 0 0 1 32 0H8Zm0 4h32l-5 12H13L8 25Z"/><path d="M13 29h22M16 34h16"/></svg>',
+  "soft-drink": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M17 15h16l-2 27H19l-2-27Zm2-5h12v5H19zM26 10l4-6m-12 17h12"/><path d="M25 25v6"/></svg>',
+  cookies: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M38 25a15 15 0 1 1-15-15c0 5 4 9 9 9 2 0 4-.5 6-2v8Z"/><circle cx="17" cy="22" r="1.5"/><circle cx="27" cy="31" r="1.5"/><circle cx="19" cy="34" r="1.5"/></svg>',
+  "bottled-water": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M19 7h10v6l4 5v23H15V18l4-5V7Zm0 6h10m-12 8h14m-14 4h14"/><path d="M22 31h4"/></svg>',
+  chocolate: '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 15 34 8l7 25-24 7-7-25Z"/><path d="m10 15 24 0m-16 4 4 14m4-18 4 14m-9-9 19-5"/></svg>',
+};
 
 function formatMoney(amount) {
   return currency.format(amount);
@@ -60,6 +81,9 @@ function formatMoney(amount) {
 function announce(message, kind = "info") {
   feedback.textContent = message;
   feedback.dataset.kind = kind;
+  feedback.classList.add("is-visible");
+  window.clearTimeout(feedbackTimeout);
+  feedbackTimeout = window.setTimeout(() => feedback.classList.remove("is-visible"), 2400);
 }
 
 function makeProductCard(product) {
@@ -68,6 +92,14 @@ function makeProductCard(product) {
   button.type = "button";
   button.dataset.productId = product.id;
   button.setAttribute("aria-label", `Add ${product.name}, ${formatMoney(product.price)}`);
+
+  const visual = document.createElement("span");
+  visual.className = `product-visual product-visual-${product.id}`;
+  visual.innerHTML = PRODUCT_ICONS[product.id] ?? "";
+
+  const badge = document.createElement("span");
+  badge.className = "product-quantity-badge";
+  badge.setAttribute("aria-hidden", "true");
 
   const details = document.createElement("span");
   details.className = "product-details";
@@ -82,16 +114,16 @@ function makeProductCard(product) {
 
   const action = document.createElement("span");
   action.className = "product-action";
-  action.innerHTML = '<span aria-hidden="true">+</span> Add item';
+  action.innerHTML = '<span aria-hidden="true">+</span> Tap to add';
 
   details.append(name, price);
-  button.append(details, action);
+  button.append(visual, badge, details, action);
   return button;
 }
 
 function renderProducts() {
   const fragment = document.createDocumentFragment();
-  for (const product of PRODUCTS) {
+  for (const product of PRODUCTS.filter((item) => selectedCategory === "all" || PRODUCT_CATEGORIES[item.id] === selectedCategory)) {
     fragment.append(makeProductCard(product));
   }
   productGrid.replaceChildren(fragment);
@@ -155,8 +187,8 @@ function makeOrderRow(item) {
   remove.type = "button";
   remove.dataset.action = "remove";
   remove.dataset.productId = item.product.id;
-  remove.textContent = "Remove";
   remove.setAttribute("aria-label", `Remove ${item.product.name}`);
+  remove.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16m-10 4v7m4-7v7M6 7l1 14h10l1-14M9 7V4h6v3"/></svg>';
 
   controls.append(quantity, remove);
   row.append(top, controls);
@@ -168,9 +200,9 @@ function renderOrder() {
   const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
   if (state.cart.length === 0) {
-    const empty = document.createElement("p");
+    const empty = document.createElement("div");
     empty.className = "empty-order";
-    empty.textContent = "Your order is empty";
+    empty.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 17h32l-3 25H11L8 17Zm9 0a7 7 0 0 1 14 0"/><path d="M18 27v7m12-7v7"/></svg><strong>Your order is empty</strong><span>Tap a product to start your order.</span>';
     fragment.append(empty);
   } else {
     for (const item of state.cart) {
@@ -179,6 +211,16 @@ function renderOrder() {
   }
 
   orderContent.replaceChildren(fragment);
+  for (const card of productGrid.querySelectorAll(".product-card")) {
+    const item = state.cart.find((cartItem) => cartItem.product.id === card.dataset.productId);
+    const badge = card.querySelector(".product-quantity-badge");
+    card.classList.toggle("is-selected", Boolean(item));
+    badge.textContent = item ? String(item.quantity) : "";
+    badge.hidden = !item;
+    card.setAttribute("aria-label", item
+      ? `Add ${card.querySelector(".product-name").textContent}, ${formatMoney(item.product.price)}. ${item.quantity} in your order.`
+      : `Add ${card.querySelector(".product-name").textContent}, ${formatMoney(PRODUCTS.find((product) => product.id === card.dataset.productId).price)}`);
+  }
   itemCount.textContent = `${count} ${count === 1 ? "item" : "items"}`;
   orderTotal.textContent = formatMoney(calculateTransactionTotal(state.cart));
   reviewButton.disabled = state.cart.length === 0;
@@ -410,6 +452,19 @@ productGrid.addEventListener("click", (event) => {
 
   changeState({ type: "add_product", product: selectedProduct });
   announce(`Product added — ${selectedProduct.name}`, "success");
+});
+
+categoryFilters.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-category]");
+  if (!button) return;
+  selectedCategory = button.dataset.category;
+  for (const filter of categoryFilters.querySelectorAll("[data-category]")) {
+    const selected = filter === button;
+    filter.classList.toggle("is-selected", selected);
+    filter.setAttribute("aria-pressed", String(selected));
+  }
+  renderProducts();
+  renderOrder();
 });
 
 orderContent.addEventListener("click", (event) => {
