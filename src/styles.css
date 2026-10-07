@@ -1069,6 +1069,10 @@ h1[tabindex="-1"] {
   border-bottom: 0;
 }
 
+.success-details .success-detail-total {
+  background: #fff;
+}
+
 .success-details dt {
   color: var(--secondary-text);
   font-size: 14px;
@@ -1083,6 +1087,11 @@ h1[tabindex="-1"] {
   font-weight: 800;
   overflow-wrap: anywhere;
   text-align: right;
+}
+
+.success-detail-total dd {
+  color: var(--primary-hover);
+  font-size: 16px;
 }
 
 .success-next {
