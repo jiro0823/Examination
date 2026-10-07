@@ -81,12 +81,52 @@ test("increasing and decreasing Coffee quantity updates the total", () => {
   assert.equal(calculateTransactionTotal(state.cart), 175);
 });
 
-test("decreasing quantity at one cannot create a zero or negative cart item", () => {
+test("decreasing Coffee from two leaves one item", () => {
+  let state = add(createInitialPosState(), "coffee");
+  state = increaseQuantity(state, "coffee");
+  state = decreaseQuantity(state, "coffee");
+
+  assert.equal(state.cart.length, 1);
+  assert.equal(state.cart[0].quantity, 1);
+  assert.equal(calculateTransactionTotal(state.cart), 45);
+});
+
+test("decreasing a quantity of one removes the product", () => {
   const state = add(createInitialPosState(), "coffee");
   const nextState = decreaseQuantity(state, "coffee");
 
-  assert.equal(nextState.cart[0].quantity, 1);
-  assert.equal(calculateTransactionTotal(nextState.cart), 45);
+  assert.deepEqual(nextState.cart, []);
+  assert.equal(calculateTransactionTotal(nextState.cart), 0);
+});
+
+test("decreasing one item removes it and preserves the rest of the order", () => {
+  let state = add(createInitialPosState(), "coffee");
+  state = add(state, "sandwich");
+  state = decreaseQuantity(state, "coffee");
+
+  assert.deepEqual(state.cart.map(({ product }) => product.id), ["sandwich"]);
+  assert.equal(calculateTransactionTotal(state.cart), 50);
+});
+
+test("decrementing the last unit matches the explicit remove action", () => {
+  let state = add(createInitialPosState(), "coffee");
+  state = add(state, "sandwich");
+
+  assert.deepEqual(
+    decreaseQuantity(state, "coffee"),
+    removeProduct(state, "coffee"),
+  );
+});
+
+test("repeated decrement of the last item never creates a zero or negative row", () => {
+  let state = add(createInitialPosState(), "coffee");
+  state = decreaseQuantity(state, "coffee");
+  state = decreaseQuantity(state, "coffee");
+  state = decreaseQuantity(state, "coffee");
+
+  assert.deepEqual(state.cart, []);
+  assert.ok(state.cart.every(({ quantity }) => quantity > 0));
+  assert.equal(calculateTransactionTotal(state.cart), 0);
 });
 
 test("removing Soft Drink updates the reference total to 140", () => {

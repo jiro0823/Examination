@@ -158,8 +158,12 @@ export function decreaseQuantity(
   }
 
   const item = state.cart.find((cartItem) => cartItem.product.id === productId);
-  if (!item || item.quantity <= 1) {
+  if (!item) {
     return state;
+  }
+
+  if (item.quantity <= 1) {
+    return removeProduct(state, productId);
   }
 
   return {

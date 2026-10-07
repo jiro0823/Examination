@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#102a43" />
     <title>Campus Store | Self-Service Kiosk</title>
     <link rel="stylesheet" href="./src/styles.css" />
+    <script src="./node_modules/qrcodejs/qrcode.min.js"></script>
     <script type="module" src="./src/main.js"></script>
   </head>
   <body>
@@ -169,12 +170,11 @@
         </div>
         <div class="review-card qr-payment-card">
           <div class="amount-due"><span>Amount to pay</span><strong id="qr-total">₱0.00</strong></div>
-          <div class="qr-placeholder" role="img" aria-label="QR code placeholder for simulated payment">
-            <span class="qr-placeholder-mark" aria-hidden="true">QR</span>
-            <strong>SIMULATED QR CODE</strong>
-            <span>No real payment will be requested</span>
+          <div class="qr-code-frame">
+            <div id="qr-code" class="qr-code" role="img" aria-label="Generated QR code for simulated payment"></div>
+            <span class="qr-demo-label">DEMO CODE · NO FUNDS TRANSFER</span>
           </div>
-          <p class="qr-instructions">In a live kiosk, use your payment app to scan the displayed QR code. This placeholder is not scannable and no payment gateway is connected. Select Confirm Payment to simulate completion.</p>
+          <p class="qr-instructions">Scan to view the demo order amount. This code does not connect to a payment service or transfer funds. Select Confirm Payment to simulate completion.</p>
           <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
           <div class="qr-actions">
             <button id="back-from-qr" class="secondary-button" type="button">Back</button>

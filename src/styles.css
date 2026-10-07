@@ -15,6 +15,9 @@
   --line: #e3e8ed;
   --success: #1e7b56;
   --danger: #b93838;
+  --header-height: 68px;
+  --progress-height: 58px;
+  --footer-height: 36px;
 }
 
 * {
@@ -43,11 +46,15 @@ input:focus-visible {
 }
 
 .site-header {
+  position: sticky;
+  z-index: 30;
+  top: 0;
   display: flex;
-  min-height: 88px;
+  height: var(--header-height);
+  min-height: var(--header-height);
   align-items: center;
   justify-content: space-between;
-  padding: 16px clamp(20px, 5vw, 72px);
+  padding: 8px clamp(20px, 3vw, 48px);
   color: #fff;
   background: var(--navy);
 }
@@ -107,40 +114,70 @@ input:focus-visible {
 }
 
 .progress-wrap {
+  position: sticky;
+  z-index: 20;
+  top: var(--header-height);
+  height: var(--progress-height);
   border-bottom: 1px solid #e1e6eb;
   background: #fff;
 }
 
 .progress-nav {
+  height: 100%;
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 clamp(20px, 5vw, 72px);
 }
 
 .progress-list {
+  position: relative;
   display: grid;
+  height: 100%;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   max-width: 800px;
   margin: 0 auto;
-  padding: 14px 0;
+  padding: 4px 0;
   list-style: none;
 }
 
 .progress-step {
+  position: relative;
   display: flex;
-  min-height: 44px;
+  min-height: 0;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 2px;
   color: #586a7b;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 650;
 }
 
+.progress-step::before {
+  position: absolute;
+  z-index: 0;
+  top: 13px;
+  right: 50%;
+  left: -50%;
+  height: 2px;
+  background: #d7dee5;
+  content: "";
+}
+
+.progress-step:first-child::before {
+  display: none;
+}
+
+.progress-step.is-complete::before {
+  background: var(--success);
+}
+
 .step-number {
+  position: relative;
+  z-index: 1;
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   place-items: center;
   border: 1px solid #d7dee5;
   border-radius: 50%;
@@ -171,13 +208,17 @@ input:focus-visible {
   color: #155e40;
 }
 
+h1[tabindex="-1"] {
+  scroll-margin-top: calc(var(--header-height) + var(--progress-height) + 12px);
+}
+
 .page-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 405px);
-  gap: clamp(24px, 3vw, 42px);
+  grid-template-columns: minmax(0, 1.9fr) minmax(340px, 0.95fr);
+  gap: 24px;
   width: min(1440px, 100%);
   margin: 0 auto;
-  padding: 36px clamp(20px, 5vw, 72px) 56px;
+  padding: 18px clamp(20px, 3vw, 48px) 20px;
 }
 
 [hidden] {
@@ -187,15 +228,15 @@ input:focus-visible {
 .review-shell {
   width: min(1120px, 100%);
   margin: 0 auto;
-  padding: 42px clamp(20px, 5vw, 72px) 60px;
+  padding: 24px clamp(20px, 3vw, 48px) 32px;
 }
 
 .review-heading {
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
 
 .review-card {
-  padding: clamp(20px, 3vw, 36px);
+  padding: clamp(18px, 2vw, 26px);
   border: 1px solid var(--line);
   border-radius: 22px;
   background: var(--surface);
@@ -315,14 +356,14 @@ input:focus-visible {
 
 .payment-options {
   display: grid;
-  gap: 14px;
-  padding: 24px 0;
+  gap: 10px;
+  padding: 16px 0;
 }
 
 .payment-option {
   position: relative;
   display: flex;
-  min-height: 104px;
+  min-height: 78px;
   align-items: center;
   gap: 18px;
   padding: 18px 22px;
@@ -413,55 +454,63 @@ input:focus-visible {
 }
 
 .qr-payment-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+  align-items: center;
+  column-gap: 24px;
   max-width: 820px;
 }
 
-.qr-placeholder {
+.qr-payment-card .amount-due,
+.qr-payment-card .qr-instructions,
+.qr-payment-card #qr-feedback,
+.qr-payment-card .qr-actions {
+  grid-column: 1;
+}
+
+.qr-code-frame {
   display: grid;
-  width: min(280px, 100%);
-  min-height: 280px;
+  grid-column: 2;
+  grid-row: 1 / span 4;
   justify-items: center;
-  align-content: center;
-  gap: 12px;
-  margin: 28px auto 20px;
-  padding: 24px;
-  border: 2px dashed #9aabba;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
   border-radius: 18px;
-  color: var(--navy);
   background: #f5f7f9;
+}
+
+.qr-code {
+  display: grid;
+  width: 224px;
+  height: 224px;
+  place-items: center;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.qr-code img,
+.qr-code canvas {
+  display: block;
+  width: 208px;
+  height: 208px;
+  image-rendering: pixelated;
+}
+
+.qr-demo-label {
+  color: var(--orange-dark);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
   text-align: center;
 }
 
-.qr-placeholder-mark {
-  display: grid;
-  width: 92px;
-  height: 92px;
-  place-items: center;
-  border: 3px solid var(--navy);
-  border-radius: 12px;
-  color: var(--navy);
-  background: #fff;
-  font-size: 24px;
-  font-weight: 850;
-  letter-spacing: 0.08em;
-}
-
-.qr-placeholder > strong {
-  font-size: 13px;
-  letter-spacing: 0.07em;
-}
-
-.qr-placeholder > span:last-child,
 .qr-instructions {
+  align-self: start;
+  margin: 12px 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.55;
-}
-
-.qr-instructions {
-  max-width: 640px;
-  margin: 0 auto 22px;
-  text-align: center;
+  line-height: 1.5;
 }
 
 .qr-actions {
@@ -472,6 +521,7 @@ input:focus-visible {
 
 .qr-actions > button {
   width: 50%;
+  min-height: 52px;
 }
 
 .card-payment-card {
@@ -811,12 +861,12 @@ input:focus-visible {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 22px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .eyebrow {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: #586a7b;
   font-size: 11px;
   font-weight: 800;
@@ -839,7 +889,7 @@ h1 {
 }
 
 .section-description {
-  margin: 9px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
   font-size: 15px;
 }
@@ -854,18 +904,18 @@ h1 {
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .product-card {
   display: flex;
-  min-height: 158px;
+  min-height: 142px;
   flex-direction: column;
   align-items: stretch;
   justify-content: space-between;
-  padding: 20px;
+  padding: 16px;
   border: 1px solid #e2e8ee;
-  border-radius: 20px;
+  border-radius: 18px;
   color: inherit;
   background: var(--surface);
   box-shadow: 0 3px 12px rgb(16 42 67 / 4%);
@@ -886,7 +936,7 @@ h1 {
 
 .product-details {
   display: grid;
-  gap: 8px;
+  gap: 5px;
 }
 
 .product-name {
@@ -904,6 +954,7 @@ h1 {
 
 .product-action {
   display: flex;
+  min-height: 44px;
   align-items: center;
   gap: 7px;
   color: var(--orange-dark);
@@ -924,10 +975,13 @@ h1 {
 }
 
 .order-panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
   align-self: start;
-  padding: 24px;
+  padding: 18px;
   border: 1px solid #e3e8ed;
-  border-radius: 22px;
+  border-radius: 20px;
   background: var(--surface);
   box-shadow: 0 8px 28px rgb(16 42 67 / 6%);
 }
@@ -937,7 +991,7 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 18px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -963,8 +1017,9 @@ h2 {
 }
 
 .feedback {
-  min-height: 42px;
-  margin: 14px 0 4px;
+  min-height: 30px;
+  flex: 0 0 auto;
+  margin: 10px 0 2px;
   color: #586a7b;
   font-size: 13px;
   line-height: 1.5;
@@ -988,19 +1043,25 @@ h2 {
 
 .order-content {
   display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
   gap: 4px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  scroll-padding-block: 8px;
 }
 
 .empty-order {
   margin: 0;
-  padding: 20px 8px 24px;
+  padding: 14px 8px;
   color: #667788;
   font-size: 15px;
   text-align: center;
 }
 
 .order-row {
-  padding: 16px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -1032,7 +1093,7 @@ h2 {
 }
 
 .order-row-controls {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .quantity-control {
@@ -1086,10 +1147,12 @@ h2 {
 
 .order-total {
   display: flex;
+  min-height: 62px;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 21px 0 18px;
+  padding: 13px 0;
   color: var(--navy);
   font-size: 17px;
   font-weight: 700;
@@ -1104,7 +1167,7 @@ h2 {
 .primary-button {
   display: flex;
   width: 100%;
-  min-height: 56px;
+  min-height: 52px;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -1130,7 +1193,8 @@ h2 {
 }
 
 .panel-footnote {
-  margin: 12px 0 0;
+  flex: 0 0 auto;
+  margin: 7px 0 0;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.4;
@@ -1139,14 +1203,64 @@ h2 {
 
 .page-footer {
   display: flex;
+  height: var(--footer-height);
+  min-height: var(--footer-height);
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px clamp(20px, 5vw, 72px) 28px;
+  padding: 6px clamp(20px, 3vw, 48px);
   color: #586a7b;
   font-size: 12px;
 }
 
-@media (max-width: 1050px) {
+@media (min-width: 1101px) and (min-height: 650px) {
+  .page-shell {
+    height: calc(100dvh - var(--header-height) - var(--progress-height) - var(--footer-height));
+    min-height: 0;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .order-panel {
+    height: 100%;
+    overflow: hidden;
+    padding: 16px;
+  }
+
+  .order-panel-heading {
+    padding-bottom: 10px;
+  }
+
+  .order-panel-heading h2 {
+    font-size: 20px;
+  }
+
+  .feedback {
+    min-height: 28px;
+    margin: 8px 0 2px;
+    font-size: 12px;
+  }
+
+  .feedback[data-kind="success"],
+  .feedback[data-kind="error"] {
+    padding: 5px 8px;
+  }
+
+  .order-row {
+    padding: 9px 0;
+  }
+
+  .order-row-controls {
+    margin-top: 7px;
+  }
+
+  .order-total {
+    min-height: 60px;
+    padding: 10px 0;
+  }
+}
+
+@media (max-width: 1100px) {
   .page-shell {
     grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
   }
@@ -1157,8 +1271,14 @@ h2 {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --header-height: 76px;
+  }
+
   .site-header {
+    height: auto;
     min-height: 76px;
+    padding: 10px 16px;
   }
 
   .header-note {
@@ -1172,7 +1292,7 @@ h2 {
   }
 
   .progress-list {
-    padding: 10px 0;
+    padding: 4px 0;
   }
 
   .page-shell {
@@ -1182,6 +1302,16 @@ h2 {
 
   .review-shell {
     padding-top: 28px;
+  }
+
+  .qr-payment-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .qr-code-frame {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: center;
   }
 
   .review-actions {
@@ -1280,6 +1410,8 @@ h2 {
   }
 
   .page-footer {
+    height: auto;
+    min-height: var(--footer-height);
     flex-direction: column;
     gap: 5px;
   }

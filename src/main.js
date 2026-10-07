@@ -44,6 +44,7 @@ const receiptItems = document.querySelector("#receipt-items");
 const reviewTotal = document.querySelector("#review-total");
 const paymentTotal = document.querySelector("#payment-total");
 const qrTotal = document.querySelector("#qr-total");
+const qrCodeContainer = document.querySelector("#qr-code");
 const cardTotal = document.querySelector("#card-total");
 const cashTotal = document.querySelector("#cash-total");
 const cashAmount = document.querySelector("#cash-amount");
@@ -96,14 +97,15 @@ function renderProducts() {
   productGrid.replaceChildren(fragment);
 }
 
-function makeQuantityButton(label, action, productId) {
+function makeQuantityButton(action, productName, productId) {
   const button = document.createElement("button");
   button.className = "quantity-button";
   button.type = "button";
   button.dataset.action = action;
   button.dataset.productId = productId;
   button.textContent = action === "increase" ? "+" : "−";
-  button.setAttribute("aria-label", `${label} quantity`);
+  const label = action === "increase" ? "Increase" : "Decrease";
+  button.setAttribute("aria-label", `${label} ${productName} quantity`);
   return button;
 }
 
@@ -136,14 +138,17 @@ function makeOrderRow(item) {
   const quantity = document.createElement("div");
   quantity.className = "quantity-control";
   quantity.append(
-    makeQuantityButton("Decrease", "decrease", item.product.id),
+    makeQuantityButton("decrease", item.product.name, item.product.id),
   );
 
   const quantityValue = document.createElement("span");
   quantityValue.className = "quantity-value";
   quantityValue.textContent = String(item.quantity);
   quantityValue.setAttribute("aria-label", `Quantity ${item.quantity}`);
-  quantity.append(quantityValue, makeQuantityButton("Increase", "increase", item.product.id));
+  quantity.append(
+    quantityValue,
+    makeQuantityButton("increase", item.product.name, item.product.id),
+  );
 
   const remove = document.createElement("button");
   remove.className = "remove-button";
@@ -247,6 +252,29 @@ function renderCardPayment() {
   );
 }
 
+function renderQRCode(total) {
+  const payload = JSON.stringify({
+    merchant: "Campus Store",
+    mode: "SIMULATION",
+    currency: "PHP",
+    amount: total.toFixed(2),
+  });
+
+  qrCodeContainer.replaceChildren();
+  qrCodeContainer.setAttribute(
+    "aria-label",
+    `Generated demo QR code for ${formatMoney(total)}. It does not transfer funds.`,
+  );
+  new window.QRCode(qrCodeContainer, {
+    text: payload,
+    width: 208,
+    height: 208,
+    colorDark: "#102a43",
+    colorLight: "#ffffff",
+    correctLevel: window.QRCode.CorrectLevel.M,
+  });
+}
+
 function getPaymentMethodLabel(method) {
   if (method === "qr") return "QR Payment";
   if (method === "card") return "Credit / Debit Card";
@@ -341,7 +369,13 @@ function render() {
   renderOrder();
   renderReview();
   paymentTotal.textContent = formatMoney(calculateTransactionTotal(state.cart));
-  qrTotal.textContent = formatMoney(calculateTransactionTotal(state.cart));
+  const total = calculateTransactionTotal(state.cart);
+  qrTotal.textContent = formatMoney(total);
+  if (state.step === "processing" && state.paymentMethod === "qr") {
+    renderQRCode(total);
+  } else {
+    qrCodeContainer.replaceChildren();
+  }
   for (const option of document.querySelectorAll("[data-payment-method]")) {
     option.setAttribute("aria-pressed", String(option.dataset.paymentMethod === state.paymentMethod));
   }
@@ -390,12 +424,12 @@ orderContent.addEventListener("click", (event) => {
     changeState({ type: "increase_quantity", productId });
     announce(`${item.product.name} quantity increased.`, "success");
   } else if (action === "decrease") {
-    if (item.quantity === 1) {
-      announce("Quantity is already 1. Use Remove to delete this item.");
-      return;
-    }
     changeState({ type: "decrease_quantity", productId });
-    announce(`${item.product.name} quantity decreased.`, "success");
+    if (item.quantity === 1) {
+      announce(`${item.product.name} removed from your order.`);
+    } else {
+      announce(`${item.product.name} quantity decreased.`, "success");
+    }
   } else if (action === "remove") {
     changeState({ type: "remove_product", productId });
     announce(`${item.product.name} removed from your order.`);
