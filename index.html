@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#102a43" />
+    <title>Campus Store | Self-Service Kiosk</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="brand-lockup" aria-label="Campus Store self-service kiosk">
+        <div class="brand-mark" aria-hidden="true">CS</div>
+        <div>
+          <p class="brand-name">Campus Store</p>
+          <p class="brand-subtitle">Self-service kiosk</p>
+        </div>
+      </div>
+      <div class="header-note">
+        <span class="status-dot" aria-hidden="true"></span>
+        Ready to order
+      </div>
+    </header>
+
+    <div class="progress-wrap">
+      <nav class="progress-nav" aria-label="Order progress">
+        <ol class="progress-list">
+          <li class="progress-step is-current" data-step="order" aria-current="step">
+            <span class="step-number">1</span>
+            <span>Order</span>
+          </li>
+          <li class="progress-step" data-step="review" aria-disabled="true">
+            <span class="step-number">2</span>
+            <span>Review</span>
+          </li>
+          <li class="progress-step" data-step="payment" aria-disabled="true">
+            <span class="step-number">3</span>
+            <span>Payment</span>
+          </li>
+          <li class="progress-step" data-step="receipt" aria-disabled="true">
+            <span class="step-number">4</span>
+            <span>Receipt</span>
+          </li>
+        </ol>
+      </nav>
+    </div>
+
+    <main>
+      <div id="order-step" class="page-shell">
+      <section class="catalog-section" aria-labelledby="catalog-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">CAMPUS STORE MENU</p>
+            <h1 id="catalog-title" tabindex="-1">What would you like?</h1>
+            <p class="section-description">Tap an item to add it to your order.</p>
+          </div>
+          <p class="price-note">All prices in Philippine pesos</p>
+        </div>
+        <div id="product-grid" class="product-grid" aria-label="Products"></div>
+      </section>
+
+      <aside class="order-panel" aria-labelledby="order-title">
+        <div class="order-panel-heading">
+          <div>
+            <p class="eyebrow">YOUR ITEMS</p>
+            <h2 id="order-title">Your Order</h2>
+          </div>
+          <span id="item-count" class="item-count" aria-live="polite">0 items</span>
+        </div>
+
+        <p id="feedback" class="feedback" role="status" aria-live="polite">
+          Your order is empty
+        </p>
+        <div id="order-content" class="order-content"></div>
+
+        <div class="order-total">
+          <span>Total</span>
+          <strong id="order-total" aria-live="polite">₱0.00</strong>
+        </div>
+        <button id="review-order" class="primary-button" type="button" disabled>
+          Review order <span aria-hidden="true">→</span>
+        </button>
+        <p class="panel-footnote">You can change your order before continuing.</p>
+      </aside>
+      </div>
+
+      <section id="review-step" class="review-shell" aria-labelledby="review-title" hidden>
+        <div class="review-heading">
+          <p class="eyebrow">CHECK YOUR ORDER</p>
+          <h1 id="review-title" tabindex="-1">Review your order</h1>
+          <p class="section-description">Make sure everything is right before payment.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-table-wrap">
+            <table class="review-table">
+              <thead>
+                <tr>
+                  <th scope="col">PRODUCT</th>
+                  <th scope="col">QUANTITY</th>
+                  <th scope="col">UNIT PRICE</th>
+                  <th scope="col">SUBTOTAL</th>
+                </tr>
+              </thead>
+              <tbody id="review-items"></tbody>
+            </table>
+          </div>
+          <div class="review-total"><span>Transaction total</span><strong id="review-total">₱0.00</strong></div>
+          <div class="review-actions">
+            <button id="back-to-items" class="secondary-button" type="button">Back to Item Selection</button>
+            <button id="continue-to-payment" class="primary-button" type="button">Continue to Payment <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="payment-step" class="review-shell" aria-labelledby="payment-title" hidden>
+        <div class="review-heading">
+          <p class="eyebrow">PAYMENT METHOD</p>
+          <h1 id="payment-title" tabindex="-1">Choose how to pay</h1>
+          <p class="section-description">Select a payment method to continue.</p>
+        </div>
+        <div class="review-card payment-card">
+          <div class="amount-due"><span>Amount Due</span><strong id="payment-total">₱0.00</strong></div>
+          <div class="payment-options" role="group" aria-label="Payment methods">
+            <button class="payment-option" type="button" data-payment-method="cash" aria-pressed="false">
+              <span class="payment-option-icon" aria-hidden="true">₱</span>
+              <span class="payment-option-copy"><strong>Cash</strong><span>Pay with cash</span></span>
+              <span class="payment-option-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="payment-option" type="button" data-payment-method="qr" aria-pressed="false">
+              <span class="payment-option-icon qr-icon" aria-hidden="true">QR</span>
+              <span class="payment-option-copy"><strong>QR Payment</strong><span>Scan a payment code</span></span>
+              <span class="payment-option-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="payment-option" type="button" data-payment-method="card" aria-pressed="false">
+              <span class="payment-option-icon card-icon" aria-hidden="true">▰</span>
+              <span class="payment-option-copy"><strong>Credit / Debit Card</strong><span>Pay with your card</span></span>
+              <span class="payment-option-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+          <button id="back-to-review" class="secondary-button payment-back" type="button">Back to Review</button>
+        </div>
+      </section>
+
+      <section id="processing-step" class="review-shell" aria-labelledby="processing-title" hidden>
+        <div id="card-payment-ready" class="review-card card-payment-card">
+          <p class="eyebrow">CARD PAYMENT SIMULATION</p>
+          <h1 id="processing-title" tabindex="-1">Credit / Debit Card</h1>
+          <div class="amount-due"><span>Amount Due</span><strong id="card-total">₱0.00</strong></div>
+          <p class="card-instructions">Please tap, insert, or swipe your card.</p>
+          <p id="card-feedback" class="card-feedback" role="status" aria-live="polite"></p>
+          <div class="card-actions">
+            <button id="back-to-payment" class="secondary-button" type="button">Back</button>
+            <button id="process-card-payment" class="primary-button" type="button">Process Payment</button>
+          </div>
+        </div>
+        <div id="card-processing-state" class="review-card card-processing-state" role="status" aria-live="polite" hidden>
+          <span class="processing-spinner" aria-hidden="true"></span>
+          <h1 id="card-processing-title" tabindex="-1">Processing payment</h1>
+          <p class="section-description">Please wait while we complete the simulated card payment.</p>
+        </div>
+      </section>
+
+      <section id="qr-payment-step" class="review-shell" aria-labelledby="qr-payment-title" hidden>
+        <div class="review-heading">
+          <p class="eyebrow">QR PAYMENT SIMULATION</p>
+          <h1 id="qr-payment-title" tabindex="-1">QR Payment</h1>
+          <p class="section-description">Scan the demonstration code to continue.</p>
+        </div>
+        <div class="review-card qr-payment-card">
+          <div class="amount-due"><span>Amount to pay</span><strong id="qr-total">₱0.00</strong></div>
+          <div class="qr-placeholder" role="img" aria-label="QR code placeholder for simulated payment">
+            <span class="qr-placeholder-mark" aria-hidden="true">QR</span>
+            <strong>SIMULATED QR CODE</strong>
+            <span>No real payment will be requested</span>
+          </div>
+          <p class="qr-instructions">In a live kiosk, use your payment app to scan the displayed QR code. This placeholder is not scannable and no payment gateway is connected. Select Confirm Payment to simulate completion.</p>
+          <p id="qr-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
+          <div class="qr-actions">
+            <button id="back-from-qr" class="secondary-button" type="button">Back</button>
+            <button id="confirm-qr-payment" class="primary-button" type="button">Confirm Payment</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="cash-payment-step" class="review-shell" aria-labelledby="cash-payment-title" hidden>
+        <div class="review-heading">
+          <p class="eyebrow">CASH PAYMENT</p>
+          <h1 id="cash-payment-title" tabindex="-1">Pay with cash</h1>
+          <p class="section-description">Enter the cash amount received.</p>
+        </div>
+        <div class="review-card cash-payment-card">
+          <div class="cash-summary">
+            <div><span>Total amount</span><strong id="cash-total">₱0.00</strong></div>
+            <div><span>Change</span><strong id="cash-change" aria-live="polite">—</strong></div>
+          </div>
+          <label class="cash-input-label" for="cash-amount">Amount paid</label>
+          <div class="cash-input-wrap">
+            <span aria-hidden="true">₱</span>
+            <input id="cash-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-describedby="cash-feedback" />
+          </div>
+          <div class="quick-amounts" id="quick-amounts" aria-label="Quick cash amounts"></div>
+          <p id="cash-feedback" class="cash-feedback" role="status" aria-live="polite"></p>
+          <div class="cash-actions">
+            <button id="change-cash-method" class="secondary-button" type="button">Change payment method</button>
+            <button id="pay-now" class="primary-button" type="button">Pay Now</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="success-step" class="review-shell" aria-labelledby="success-title" hidden>
+        <div class="review-card success-card">
+          <span class="success-mark" aria-hidden="true">✓</span>
+          <p class="eyebrow">PAYMENT COMPLETE</p>
+          <h1 id="success-title" tabindex="-1">Payment Successful</h1>
+          <p id="success-message" class="section-description">Your payment has been received.</p>
+          <dl class="success-details">
+            <div><dt>Reference number</dt><dd id="success-reference"></dd></div>
+            <div><dt>Payment method</dt><dd id="success-method"></dd></div>
+            <div><dt>Transaction amount</dt><dd id="success-total"></dd></div>
+            <div><dt>Amount paid</dt><dd id="success-paid"></dd></div>
+            <div><dt>Change</dt><dd id="success-change"></dd></div>
+          </dl>
+          <button id="view-receipt" class="primary-button success-receipt-button" type="button">View Receipt</button>
+        </div>
+      </section>
+
+      <section id="receipt-step" class="review-shell" aria-labelledby="receipt-title" hidden>
+        <div class="review-card receipt-card">
+          <header class="receipt-header">
+            <p class="eyebrow">DIGITAL RECEIPT</p>
+            <h1 id="receipt-title" tabindex="-1">Campus Store POS</h1>
+            <p>Transaction <strong id="receipt-reference"></strong></p>
+            <p id="receipt-date"></p>
+          </header>
+          <div class="review-table-wrap">
+            <table class="review-table receipt-table">
+              <thead>
+                <tr>
+                  <th scope="col">PRODUCT</th>
+                  <th scope="col">QUANTITY</th>
+                  <th scope="col">UNIT PRICE</th>
+                  <th scope="col">SUBTOTAL</th>
+                </tr>
+              </thead>
+              <tbody id="receipt-items"></tbody>
+            </table>
+          </div>
+          <dl class="receipt-details">
+            <div><dt>Total</dt><dd id="receipt-total"></dd></div>
+            <div><dt>Payment method</dt><dd id="receipt-method"></dd></div>
+            <div><dt>Amount paid</dt><dd id="receipt-paid"></dd></div>
+            <div><dt>Change</dt><dd id="receipt-change"></dd></div>
+          </dl>
+          <p class="receipt-status">Payment Successful</p>
+          <button id="new-transaction" class="primary-button" type="button">New Transaction</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span>Campus Store</span>
+      <span>Touch an item to get started</span>
+    </footer>
+  </body>
+</html>

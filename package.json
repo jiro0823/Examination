@@ -1,0 +1,18 @@
+{
+  "name": "it415-pos-kiosk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types tests/pos.test.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src tests",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.60.1"
+  }
+}
